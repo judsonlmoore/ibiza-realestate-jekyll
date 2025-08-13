@@ -28,6 +28,7 @@ jobs:
       with:
         ruby-version: '3.3'
         bundler-cache: true
+        bundler-set-frozen: false
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -37,6 +38,9 @@ jobs:
 
     - name: Install dependencies
       run: npm ci
+
+    - name: Update dependencies
+      run: bundle update
 
     - name: Cache Jekyll build
       uses: actions/cache@v3
