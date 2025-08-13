@@ -7,7 +7,7 @@ bundle exec jekyll build
 # Check if pagefind is installed
 if command -v pagefind &> /dev/null; then
     echo "Generating pagefind index..."
-    pagefind --source _site
+    pagefind --site _site
     echo "Pagefind index generated!"
 else
     echo "Pagefind not found. Please install pagefind to generate search index."

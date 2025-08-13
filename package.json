@@ -5,8 +5,8 @@
   "scripts": {
     "build": "bundle exec jekyll build",
     "serve": "bundle exec jekyll serve",
-    "search": "pagefind --source _site",
-    "build-full": "bundle exec jekyll build && pagefind --source _site"
+    "search": "pagefind --site _site",
+    "build-full": "bundle exec jekyll build && pagefind --site _site"
   },
   "devDependencies": {
     "pagefind": "^1.3.0"
