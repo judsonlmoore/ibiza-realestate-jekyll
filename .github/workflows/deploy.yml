@@ -1,22 +1,12 @@
-name: Deploy to GitHub Pages
+name: Deploy to GitHub Pages (Clean)
 
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     
     steps:
@@ -27,49 +17,32 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.3'
-        bundler-cache: true
-        bundler-set-frozen: false
+        bundler-cache: false
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
 
-    - name: Install dependencies
-      run: npm ci
+    - name: Install Ruby dependencies
+      run: |
+        gem install bundler
+        bundle config set --local deployment false
+        bundle config set --local frozen false
+        bundle install
 
-    - name: Update dependencies
-      run: bundle update
-
-    - name: Cache Jekyll build
-      uses: actions/cache@v3
-      with:
-        path: vendor/bundle
-        key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-gems-
+    - name: Install Node.js dependencies
+      run: npm install
 
     - name: Build Jekyll site
-      run: bundle exec jekyll build --verbose
+      run: bundle exec jekyll build
 
     - name: Generate Pagefind index
-      run: npx pagefind --source _site --verbose
+      run: npx pagefind --source _site
 
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v2
-      with:
-        path: ./_site
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-    
-    steps:
     - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v2
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./_site
+        force_orphan: true
