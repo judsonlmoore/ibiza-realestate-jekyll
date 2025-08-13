@@ -1,0 +1,56 @@
+---
+layout: default
+title: Listings
+permalink: /listings/
+---
+
+
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th scope="col">Property</th>
+        <th scope="col">Location</th>
+        <th scope="col">Type</th>
+        <th scope="col">Bedrooms</th>
+        <th scope="col">Bathrooms</th>
+        <th scope="col">Area (m²)</th>
+        <th scope="col">Price (€)</th>
+        <th scope="col">Status</th>
+        <th scope="col">Agency</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for listing in site.data.listings %}
+      <tr>
+        <td>
+          <strong>{{ listing.name }}</strong>
+          {% if listing.featured_image_url %}
+          <br><small class="text-muted">Image available</small>
+          {% endif %}
+        </td>
+        <td>
+          {{ listing.region }}{% if listing.sub_region %}, {{ listing.sub_region }}{% endif %}
+        </td>
+        <td>{{ listing.type }}</td>
+        <td>{{ listing.bedroom | default: "N/A" }}</td>
+        <td>{{ listing.bathroom | default: "N/A" }}</td>
+        <td>{{ listing.living_area | default: "N/A" }}</td>
+        <td>
+          {% if listing.current_price %}
+            €{{ listing.current_price | number_with_delimiter }}
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+        <td>
+          <span class="badge {% if listing.status == 'sale' %}bg-success{% else %}bg-primary{% endif %}">
+            {{ listing.status | capitalize }}
+          </span>
+        </td>
+        <td>{{ listing.agency }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  

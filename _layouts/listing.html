@@ -1,0 +1,83 @@
+---
+layout: default
+---
+
+{% assign listing = page %}
+
+<div class="container data-pagefind-body">
+    <div class="row">
+        <h1>{{ listing.title }}</h1>
+        <div class="col-md-8">
+            <p>{{ listing.listing_description | markdownify }}</p>
+
+
+            {% if listing.property_images.size > 1 %}
+            <div id="propertyImageCarousel" class="carousel slide">
+                <div class="carousel-indicators">
+                    {% for image in listing.property_images %}
+                    <button type="button" data-bs-target="#propertyImageCarousel"
+                        data-bs-slide-to="{{ forloop.index0 }}" {% if forloop.first %}class="active" aria-current="true"
+                        {% endif %} aria-label="Slide {{ forloop.index }}"></button>
+                    {% endfor %}
+                </div>
+                <div class="carousel-inner">
+                    {% for image in listing.property_images %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <img src="https://images.weserv.nl/?url={{ image }}&w=500&output=webp&q=85"
+                            alt="{{ listing.title }} - Image {{ forloop.index }}" data-pagefind-meta="image"
+                            class="img-fluid w-100" />
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#propertyImageCarousel"
+                    data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#propertyImageCarousel"
+                    data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+            {% else %}
+            <img src="https://images.weserv.nl/?url={{ listing.featured_image_url }}&w=500&output=webp&q=85"
+                alt="{{ listing.title }}" data-pagefind-meta="image" class="img-fluid" />
+            {% endif %}
+
+
+        </div>
+        <div class="col-md-4">
+            <h2>Details</h2>
+            <a href="{{ listing.original_url }}" class="btn btn-primary" target="_blank">View Original Listing</a>
+            <ul>
+                <li>property_id: {{ listing.property_id }}</li>
+                <li>current_price: {{ listing.current_price | divided_by: 1 | money: "€" }}</li>
+                <li>last_price_update_change: {{ listing.last_price_update_change | divided_by: 1 | money: "€" }}</li>
+                <li>record_creation_price: {{ listing.record_creation_price | divided_by: 1 | money: "€" }}</li>
+                <li data-pagefind-filter="Agency">agency: {{ listing.agency }}</li>
+                <li>hash: {{ listing.hash }}</li>
+                <li data-pagefind-filter="Bedrooms">bedroom: {{ listing.bedroom }}</li>
+                <li data-pagefind-filter="Bathrooms">bathroom: {{ listing.bathroom }}</li>
+                <li>living_area: {{ listing.living_area }}</li>
+                <li>plot_area: {{ listing.plot_area }}</li>
+                <li>construction_year: {{ listing.construction_year }}</li>
+                <li data-pagefind-filter="Region">region: {{ listing.region }}</li>
+                <li data-pagefind-filter="Sub Region">sub_region: {{ listing.sub_region }}</li>
+                <li data-pagefind-filter="Type">type: {{ listing.type }}</li>
+                <li data-pagefind-filter="Status">status: {{ listing.status }}</li>
+                <li>agency_property_id: {{ listing.agency_property_id }}</li>
+
+                <li>view: {{ listing.view }}</li>
+                <li data-pagefind-filter="Condition">condition: {{ listing.condition }}</li>
+                <li>last_renovation_year: {{ listing.last_renovation_year }}</li>
+                <li>rental_licence: {{ listing.rental_licence }}</li>
+                <li>last_update_date: {{ listing.last_update_date }}</li>
+                <li>record_creation_date: {{ listing.record_creation_date }}</li>
+                <li>created_at: {{ listing.created_at }}</li>
+                <li>updated_at: {{ listing.updated_at }}</li>
+            </ul>
+
+        </div>
+    </div>
+</div>

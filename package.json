@@ -1,0 +1,17 @@
+{
+  "name": "ibiza-realestate-jekyll",
+  "version": "1.0.0",
+  "description": "Ibiza Real Estate Jekyll website",
+  "scripts": {
+    "build": "bundle exec jekyll build",
+    "serve": "bundle exec jekyll serve",
+    "search": "pagefind --source _site",
+    "build-full": "bundle exec jekyll build && pagefind --source _site"
+  },
+  "devDependencies": {
+    "pagefind": "^1.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
