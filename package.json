@@ -4,7 +4,7 @@
   "description": "Ibiza Real Estate Jekyll website",
   "scripts": {
     "build": "bundle exec jekyll build",
-    "serve": "bundle exec jekyll serve",
+    "serve": "bundle exec jekyll serve --livereload",
     "search": "pagefind --site _site",
     "build-full": "bundle exec jekyll build && pagefind --site _site"
   },

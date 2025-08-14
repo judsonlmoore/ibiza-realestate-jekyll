@@ -5,3 +5,8 @@
 layout: home
 ---
 
+# Welcome
+
+Search for properties using the searchbar above.
+
+There are {{ site.data.listings | size }} listings.

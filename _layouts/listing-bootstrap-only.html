@@ -1,0 +1,382 @@
+---
+layout: default
+---
+
+<div class="container data-pagefind-body">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Header Section -->
+    <div class="row align-items-center mb-4">
+        <div class="col">
+            <h1 class="mb-0">{{ listing.title }}</h1>
+        </div>
+        <div class="col-auto d-none d-sm-block">
+            <a href="{{ listing.original_url }}" class="btn btn-primary" target="_blank">View Original Listing</a>
+        </div>
+    </div>
+    
+    <!-- Mobile Sticky Button -->
+    <div class="d-block d-sm-none position-fixed bottom-0 start-0 end-0 p-3 bg-white border-top shadow-sm" style="z-index: 1050;">
+        <a href="{{ listing.original_url }}" class="btn btn-primary w-100" target="_blank">View Original Listing</a>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <!-- Description -->
+            {% if listing.listing_description %}
+            <div class="mb-4">
+                <p class="lead">{{ listing.listing_description | markdownify }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Image Gallery -->
+            {% if listing.property_images.size > 1 %}
+            <div class="mb-4">
+                <!-- Main Swiper -->
+                <div class="position-relative mb-3">
+                    <swiper-container 
+                        style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff" 
+                        class="w-100"
+                        thumbs-swiper=".thumbnail-swiper" 
+                        space-between="10" 
+                        navigation="true">
+                        {% for image in listing.property_images %}
+                        <swiper-slide>
+                            <img src="https://images.weserv.nl/?url={{ image }}&w=1200&output=webp&q=85" 
+                                 class="img-fluid rounded shadow-sm w-100 h-100" 
+                                 style="object-fit: cover; object-position: center;"
+                                 alt="Property image {{ forloop.index }}" />
+                        </swiper-slide>
+                        {% endfor %}
+                    </swiper-container>
+                </div>
+                
+                <!-- Thumbnail Swiper -->
+                <div class="position-relative">
+                    <swiper-container 
+                        class="thumbnail-swiper" 
+                        space-between="10" 
+                        slides-per-view="4" 
+                        free-mode="true"
+                        watch-slides-progress="true">
+                        {% for image in listing.property_images %}
+                        <swiper-slide>
+                            <img src="https://images.weserv.nl/?url={{ image }}&w=300&output=webp&q=85" 
+                                 class="img-fluid rounded border w-100 h-100" 
+                                 style="object-fit: cover; object-position: center;"
+                                 alt="Thumbnail {{ forloop.index }}" />
+                        </swiper-slide>
+                        {% endfor %}
+                    </swiper-container>
+                </div>
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
+            {% else %}
+            <div class="mb-4">
+                <div class="position-relative" style="aspect-ratio: 16/9; overflow: hidden;">
+                    <img src="https://images.weserv.nl/?url={{ listing.featured_image_url }}&w=1200&output=webp&q=85"
+                         alt="{{ listing.title }}" 
+                         data-pagefind-meta="image" 
+                         class="img-fluid rounded shadow-sm w-100 h-100"
+                         style="object-fit: cover; object-position: center;" />
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Property Details Cards -->
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-id-badge fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Property ID</div>
+                            <div>{{ listing.property_id | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-euro-sign fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Current Price</div>
+                            <div>
+                                {% if listing.current_price %}
+                                {{ listing.current_price | divided_by: 1 | money: "€" }}
+                                {% else %}
+                                -
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-arrow-trend-up fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Last Price Change</div>
+                            <div>
+                                {% if listing.last_price_update_change %}
+                                {{ listing.last_price_update_change | divided_by: 1 | money: "€" }}
+                                {% else %}
+                                -
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-calendar-plus fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Creation Price</div>
+                            <div>
+                                {% if listing.record_creation_price %}
+                                {{ listing.record_creation_price | divided_by: 1 | money: "€" }}
+                                {% else %}
+                                -
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-building fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Agency</div>
+                            <div data-pagefind-filter="Agency">{{ listing.agency | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-hashtag fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Hash</div>
+                            <div>{{ listing.hash | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-bed fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Bedrooms</div>
+                            <div data-pagefind-filter="Bedrooms">{{ listing.bedroom | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-bath fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Bathrooms</div>
+                            <div data-pagefind-filter="Bathrooms">{{ listing.bathroom | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-ruler-combined fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Living Area (m²)</div>
+                            <div>{{ listing.living_area | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-tree fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Plot Area (m²)</div>
+                            <div>{{ listing.plot_area | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-calendar-alt fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Construction Year</div>
+                            <div>{{ listing.construction_year | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-map-marker-alt fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Region</div>
+                            <div data-pagefind-filter="Region">{{ listing.region | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-location-dot fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Sub Region</div>
+                            <div data-pagefind-filter="Sub Region">{{ listing.sub_region | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-home fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Type</div>
+                            <div data-pagefind-filter="Type">{{ listing.type | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-tag fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Status</div>
+                            <div data-pagefind-filter="Status">{{ listing.status | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-id-card fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Agency Property ID</div>
+                            <div>{{ listing.agency_property_id | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-eye fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">View</div>
+                            <div>{{ listing.view | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-wrench fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Condition</div>
+                            <div data-pagefind-filter="Condition">{{ listing.condition | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-calendar-check fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Last Renovation Year</div>
+                            <div>{{ listing.last_renovation_year | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-key fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Rental Licence</div>
+                            <div>{{ listing.rental_licence | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-clock-rotate-left fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Last Update Date</div>
+                            <div>{{ listing.last_update_date | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-calendar-day fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Record Creation Date</div>
+                            <div>{{ listing.record_creation_date | default: "-" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-calendar-check fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Created At</div>
+                            <div>
+                                {% if listing.created_at %}
+                                {{ listing.created_at | date: "%B %-d, %Y" }}
+                                {% else %}
+                                -
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fa-solid fa-calendar-check fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold small text-muted">Updated At</div>
+                            <div>
+                                {% if listing.updated_at %}
+                                {{ listing.updated_at | date: "%B %-d, %Y" }}
+                                {% else %}
+                                -
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Minimal required styles for Swiper functionality */
+swiper-container {
+    width: 100%;
+    height: auto;
+}
+
+swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f8f9fa;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+}
+
+swiper-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.thumbnail-swiper swiper-slide {
+    aspect-ratio: 4/3;
+}
+
+.thumbnail-swiper swiper-slide {
+    opacity: 0.4;
+    transition: opacity 0.3s ease;
+    filter: grayscale(20%);
+}
+
+.thumbnail-swiper swiper-slide-thumb-active {
+    opacity: 1;
+    filter: grayscale(0%);
+}
+
+.thumbnail-swiper swiper-slide:hover {
+    opacity: 0.7;
+    filter: grayscale(10%);
+    cursor: pointer;
+}
+</style>
