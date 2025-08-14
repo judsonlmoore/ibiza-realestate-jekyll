@@ -80,7 +80,7 @@ const properties = [
         bathrooms: {{ listing.bathroom | default: 0 }},
         status: "{{ listing.status | default: '' }}",
         agency: "{{ listing.agency | default: '' }}",
-        url: "/listings/{{ listing.property_id }}/"
+                    url: "{{ site.baseurl }}listings/{{ listing.property_id }}/"
     }{% unless forloop.last %},{% endunless %}
     {% endif %}
     {% endfor %}

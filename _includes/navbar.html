@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container d-flex align-items-center">
-        <a href="{{ '/' | absolute_url }}" class="me-3 d-flex align-items-center text-decoration-none">
+        <a href="{{ '/' | relative_url }}" class="me-3 d-flex align-items-center text-decoration-none">
             <i class="fa-solid fa-house fa-lg fa-2x text-secondary"></i>
         </a>
         <div id="search" class="flex-grow-1"></div>
@@ -9,7 +9,7 @@
                 new PagefindUI({ 
                     element: "#search", 
                     showSubResults: true,
-                    bundlePath: "/pagefind/"
+                    bundlePath: "{{ '/pagefind/' | relative_url }}"
                 });
             });
         </script>
