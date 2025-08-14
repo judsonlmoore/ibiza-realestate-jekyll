@@ -2,7 +2,7 @@ title: Ibiza Properties
 #email: your-email@example.com
 description: >-
     Find your perfect Ibiza property with our comprehensive listings. Browse through our diverse range of properties, from luxury villas to cozy apartments, all available for sale or rental.
-baseurl: "" # the subpath of your site, e.g. /blog
+baseurl: "/ibiza-realestate-jekyll/" # the subpath of your site, e.g. /blog
 url: "https://judsonlmoore.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  judsonlmoore
 
