@@ -90,7 +90,6 @@ layout: default
 
 
 <div class="container data-pagefind-body">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <div class="row align-items-center listing-header-row mb-4">
             <div class="col">
@@ -434,6 +433,13 @@ layout: default
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Property Location Map -->
+    <div class="row mt-5">
+        <div class="col-12">
+            {% include property-map.html single_property=page height="400px" %}
         </div>
     </div>
 </div>

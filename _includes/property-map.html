@@ -1,0 +1,210 @@
+<!-- Property Map Component -->
+<div id="property-map" style="height: {{ include.height | default: '500px' }}; width: 100%; margin-bottom: 2rem;"></div>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<!-- Leaflet JavaScript -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// Property location coordinates (approximate)
+const locationCoordinates = {
+    'Ibiza': { lat: 38.9087, lng: 1.4324 },
+    'Mallorca': { lat: 39.6213, lng: 3.3635 },
+    'Formentera': { lat: 38.7055, lng: 1.4283 },
+    'Santa Eulalia': { lat: 38.9844, lng: 1.5344 },
+    'San Jose': { lat: 38.9186, lng: 1.2944 },
+    'San Antonio': { lat: 38.9806, lng: 1.3008 },
+    'Jesus': { lat: 38.9844, lng: 1.5344 },
+    'Ibiza Ciudad': { lat: 38.9087, lng: 1.4324 },
+    'San Carlos': { lat: 39.0214, lng: 1.5344 },
+    'San Juan': { lat: 39.0786, lng: 1.5344 },
+    'San Miguel': { lat: 39.0214, lng: 1.5344 },
+    'San Rafael': { lat: 38.9844, lng: 1.5344 },
+    'Santa Gertrudis': { lat: 38.9844, lng: 1.5344 },
+    'Santa Ines': { lat: 38.9844, lng: 1.5344 },
+    'Cala Martina': { lat: 39.0214, lng: 1.5344 },
+    'Cala Vadella': { lat: 38.9186, lng: 1.2944 },
+    'Puig Den Valls': { lat: 38.9844, lng: 1.5344 },
+    'Sant Ferran de Ses Roques': { lat: 38.7055, lng: 1.4283 },
+    'Migjorn': { lat: 39.6213, lng: 3.3635 },
+    'Pla de Mallorca': { lat: 39.6213, lng: 3.3635 },
+    'Raiguer': { lat: 39.6213, lng: 3.3635 },
+    'Sierra de Tramuntana': { lat: 39.6213, lng: 3.3635 },
+    'Roca Lisa': { lat: 38.9844, lng: 1.5344 },
+    'San Lorenzo': { lat: 39.6213, lng: 3.3635 },
+    'San Mateo': { lat: 39.6213, lng: 3.3635 },
+    'Estany Pudent': { lat: 38.7055, lng: 1.4283 },
+    'La Mola': { lat: 38.7055, lng: 1.4283 },
+    'Cap de Barberia': { lat: 38.7055, lng: 1.4283 }
+};
+
+// Initialize map
+const map = L.map('property-map').setView([38.9087, 1.4324], 9);
+
+// Add OpenStreetMap tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Get properties data based on include parameters
+{% if include.single_property %}
+// Single property mode
+const properties = [
+    {
+        name: "{{ include.single_property.name | escape }}",
+        region: "{{ include.single_property.region }}",
+        sub_region: "{{ include.single_property.sub_region | default: '' }}",
+        price: {{ include.single_property.current_price | default: 0 }},
+        type: "{{ include.single_property.type | default: '' }}",
+        bedrooms: {{ include.single_property.bedroom | default: 0 }},
+        bathrooms: {{ include.single_property.bathroom | default: 0 }},
+        status: "{{ include.single_property.status | default: '' }}",
+        agency: "{{ include.single_property.agency | default: '' }}",
+        url: "{{ include.single_property.url | default: '#' }}"
+    }
+];
+{% else %}
+// All properties mode
+const properties = [
+    {% for listing in site.data.listings %}
+    {% if listing.region and listing.region != 'None' %}
+    {
+        name: "{{ listing.name | escape }}",
+        region: "{{ listing.region }}",
+        sub_region: "{{ listing.sub_region | default: '' }}",
+        price: {{ listing.current_price | default: 0 }},
+        type: "{{ listing.type | default: '' }}",
+        bedrooms: {{ listing.bedroom | default: 0 }},
+        bathrooms: {{ listing.bathroom | default: 0 }},
+        status: "{{ listing.status | default: '' }}",
+        agency: "{{ listing.agency | default: '' }}",
+        url: "/listings/{{ listing.property_id }}/"
+    }{% unless forloop.last %},{% endunless %}
+    {% endif %}
+    {% endfor %}
+];
+{% endif %}
+
+// Create markers for each property
+const markers = [];
+const markerGroups = {};
+
+properties.forEach(property => {
+    const location = property.sub_region && locationCoordinates[property.sub_region] 
+        ? locationCoordinates[property.sub_region] 
+        : locationCoordinates[property.region];
+    
+    if (location) {
+        // Create popup content
+        const popupContent = `
+            <div style="min-width: 200px;">
+                <h6 style="margin: 0 0 8px 0; font-weight: bold;">${property.name}</h6>
+                <p style="margin: 0 0 5px 0; font-size: 14px; color: #666;">
+                    <strong>Location:</strong> ${property.region}${property.sub_region ? ', ' + property.sub_region : ''}
+                </p>
+                <p style="margin: 0 0 5px 0; font-size: 14px; color: #666;">
+                    <strong>Type:</strong> ${property.type}
+                </p>
+                <p style="margin: 0 0 5px 0; font-size: 14px; color: #666;">
+                    <strong>Price:</strong> €${property.price.toLocaleString()}
+                </p>
+                <p style="margin: 0 0 5px 0; font-size: 14px; color: #666;">
+                    <strong>Bedrooms:</strong> ${property.bedrooms} | <strong>Bathrooms:</strong> ${property.bathrooms}
+                </p>
+                <p style="margin: 0 0 8px 0; font-size: 14px; color: #666;">
+                    <strong>Status:</strong> <span class="badge ${property.status === 'sale' ? 'bg-success' : 'bg-primary'}">${property.status}</span>
+                </p>
+                <a href="${property.url}" class="btn btn-sm btn-primary text-white">View Details</a>
+            </div>
+        `;
+
+        // Create marker with custom icon
+        const marker = L.marker([location.lat, location.lng], {
+            icon: L.divIcon({
+                className: 'custom-marker',
+                html: `<div style="background-color: ${property.status === 'sale' ? '#28a745' : '#007bff'}; 
+                                      color: white; 
+                                      border-radius: 50%; 
+                                      width: 20px; 
+                                      height: 20px; 
+                                      display: flex; 
+                                      align-items: center; 
+                                      justify-content: center; 
+                                      font-size: 10px; 
+                                      font-weight: bold;
+                                      border: 2px solid white;
+                                      box-shadow: 0 2px 4px rgba(0,0,0,0.3);">€</div>`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            })
+        }).bindPopup(popupContent);
+
+        markers.push(marker);
+        
+        // Group markers by region (only for all properties mode)
+        {% unless include.single_property %}
+        if (!markerGroups[property.region]) {
+            markerGroups[property.region] = L.layerGroup();
+        }
+        markerGroups[property.region].addLayer(marker);
+        {% endunless %}
+    }
+});
+
+// Add all markers to map
+markers.forEach(marker => marker.addTo(map));
+
+{% unless include.single_property %}
+// Add layer control (only for all properties mode)
+const overlays = {};
+Object.keys(markerGroups).forEach(region => {
+    overlays[region] = markerGroups[region];
+    markerGroups[region].addTo(map);
+});
+
+L.control.layers(null, overlays, {
+    collapsed: false,
+    position: 'topright'
+}).addTo(map);
+{% endunless %}
+
+// Fit map to show all markers
+if (markers.length > 0) {
+    const group = new L.featureGroup(markers);
+    map.fitBounds(group.getBounds().pad(0.1));
+    
+    {% if include.single_property %}
+    // For single property, zoom in closer
+    map.setZoom(12);
+    {% endif %}
+}
+</script>
+
+<style>
+.custom-marker {
+    background: transparent;
+    border: none;
+}
+
+.leaflet-popup-content {
+    margin: 8px;
+}
+
+.leaflet-popup-content-wrapper {
+    border-radius: 8px;
+}
+
+.leaflet-control-layers {
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.leaflet-control-layers label {
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+</style>
