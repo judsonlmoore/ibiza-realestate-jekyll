@@ -7,8 +7,6 @@ layout: home
 
 # Ibiza Real Estate Listings
 
-## Interactive Property Map
-
 Search for properties using the searchbar above or the map below.
 
 There are {{ site.data.listings | size }} listings.

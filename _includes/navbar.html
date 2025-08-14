@@ -6,7 +6,11 @@
         <div id="search" class="flex-grow-1"></div>
         <script>
             window.addEventListener('DOMContentLoaded', (event) => {
-                new PagefindUI({ element: "#search", showSubResults: true });
+                new PagefindUI({ 
+                    element: "#search", 
+                    showSubResults: true,
+                    bundlePath: "/pagefind/"
+                });
             });
         </script>
     </div>
